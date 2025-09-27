@@ -24,8 +24,14 @@ def collection_phase(subreddit, duration_min=5, poll_pause=5, max_total=5000, ov
     pulls = 0
     print(f"[INFO] Collecting from r/{subreddit} for {duration_min} min...")
     
-    inserted_this_cycle = 0
-    try:
+    while True:
+        # Stop Conditions
+        if (time.time() - start) >= duration_min * 60:
+            break
+        if (time.time() - start) >= overall_timeout:
+            break
+        if pulls >= max_total:
+            break
         for rec in fetch_stream(subreddit, total_limit=max_total, overall_timeout=overall_timeout):
             if rec["is_ad"]:
                 continue
@@ -35,24 +41,29 @@ def collection_phase(subreddit, duration_min=5, poll_pause=5, max_total=5000, ov
                 rec["selftext"], rec["created_utc"], rec["url"], rec["is_ad"],
                 json.dumps(rec["keywords"]), rec["clean_text"]
             ))
-            inserted_this_cycle += 1
-            
-            # check duration (if there is)
-            if (time.time() - start) >= duration_min * 60:
-                print(f"[INFO] Collection time limit of {duration_min} minutes reached.")
+            pulls += 1
+
+            # check limitations again
+            if pulls >= max_total:
                 break
+            if (time.time() - start) >= duration_min * 60:
+                break
+            if (time.time() - start) >= overall_timeout:
+                break
+
+        print(f"[INFO] Pulled {pulls} posts so far...")
+        time.sleep(poll_pause)
                 
-        elapsed = int(time.time() - start)
-        print(f"[INFO] Collection finished: {inserted_this_cycle} posts in {elapsed} sec.")
+    elapsed = int(time.time() - start)
+    print(f"[INFO] Collection finished: {pulls} posts in {elapsed} sec.")
+    
+    print("[INFO] Committing changes to the database...")
+    conn.commit()
+    cur.close()
+    conn.close()
+    print("[INFO] Database connection closed.")
         
-    except Exception as e:
-        print(f"[ERROR] An error occurred during collection: {e}")
-    finally:
-        print("[INFO] Committing changes to the database...")
-        conn.commit()
-        cur.close()
-        conn.close()
-        print("[INFO] Database connection closed.")
+
                 
 # Embedding
 def embedding_phase(batch_size=50):

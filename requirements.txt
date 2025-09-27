@@ -15,3 +15,9 @@ pytesseract>=0.3.10
 # Natural Language Processing
 nltk>=3.8
 gensim>=4.3.0
+
+# Clustering
+scikit-learn>=1.7.2
+
+# Visualization
+seaborn>=0.13.2

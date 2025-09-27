@@ -435,5 +435,5 @@ def main():
         preprocessor.process_all_posts(batch_size=args.batch_size)
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

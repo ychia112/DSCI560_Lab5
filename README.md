@@ -94,3 +94,50 @@ python3 preprocessing.py
 You can also see the result summary by running
 ```bash
 python3 preprocessing.py --stats
+```
+
+# 3. Running the Pipeline
+## 3.1 Data Collection + Processing + CLI
+
+```bash
+$ python main.py --subreddit tech --interval 5
+```
+
+- ```--subreddit``` tech → collect from r/tech
+- --```interval 5``` → collect continuously for 5 minutes
+- After collection, pipeline runs embeddings + clustering + visualization
+- Then enters CLI mode
+
+### Notes on Arguments
+
+- ```--interval```: how long collection runs (minutes)
+- ```--poll_pause```: how long to pause between fetch cycles (default: 5 sec)
+- ```--max_total```: maximum total posts to fetch (default: 5000)
+- ```--overall_timeout```: maximum total time allowed for collection (seconds, default: 400)
+- ```--cluster_limit```: max posts to load for clustering (default: 2000)
+- ```--n_clusters```: number of KMeans clusters (default: 5)
+- If you want to customize these values, just pass the corresponding flag in your command, e.g.:  
+  
+```bash
+$ python main.py --subreddit tech --interval 3 --max_total 800 --cluster_limit 500 --n_clusters 8
+```
+
+### 3.2 CLI Mode
+
+After processing, you’ll see:
+
+```bash
+Enter keyword/message | 'resume' | 'exit':
+```
+
+- Type a keyword (e.g., ```AI```) → see closest cluster info
+- Type ```resume``` → start the next collection window
+- Type ```exit``` → stop the program
+
+### 3.3 Visualization
+
+After clustering, the program generates: ```clusters.png```
+
+- Each point = a post
+- Colors = clusters
+- Legend shows cluster IDs

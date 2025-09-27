@@ -124,5 +124,5 @@ def main():
             print(f"Upserted {inserted} rows...")
     print(f"Upserted total rows: {inserted}")
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
